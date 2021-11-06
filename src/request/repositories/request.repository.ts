@@ -1,119 +1,116 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Area } from '../database/models/area.model';
+import { Op } from 'sequelize';
+import { mapRequestKeys } from '../database/mappers/request.mapper';
 import { RequestType } from '../database/models/request-type.model';
 import { RequestModel } from '../database/models/request.model';
-import { User } from '../database/models/user.model';
-
-import { CreateRequestDto } from '../dto/create-request.dto';
-import { ResponseRequestDto } from '../dto/response-request.dto';
+import { UserModel } from '../database/models/user.model';
+import { RequestResponseDto } from '../dto/request/response-request.dto';
 
 @Injectable()
 export class RequestRepository {
   constructor(
     @Inject('REQUEST_REPOSITORY') private requestModel: typeof RequestModel,
   ) {}
-  async create(createRequestDto: CreateRequestDto): Promise<CreateRequestDto> {
-    try {
-      const requestCreated = new this.requestModel(createRequestDto).save();
-      return requestCreated;
-    } catch (error) {
-      console.log(error);
-    }
+  async create(createRequest): Promise<any> {
+    const requestCreated = new this.requestModel(createRequest);
+    return requestCreated.save();
   }
 
-  async findById(id: number): Promise<ResponseRequestDto> {
+  async findById(id: number): Promise<RequestResponseDto> {
     try {
       const request = await this.requestModel.findByPk<RequestModel>(id, {
         include: { all: true },
       });
-      return {
-        Id: request.Id,
-        TicketNumber: request.TicketNumber,
-        GuestName: request.GuestName,
-        GuestRoom: request.GuestRoom,
-        GuestCompany: request.GuestCompany,
-        Comments: request.Comments,
-        RequestTypeId: request.RequestStateId,
-        HotelId: request.HotelId,
-        AssignedUserId: request.AssignedUserId,
-        CreatorUserId: request.createdAt,
-        RequestStateId: request.RequestStateId,
-        RoomId: request.RoomId,
-        UserId: request.UserId,
-        SystemEntryDate: request.SystemEntryDate,
-        RequestType: request.RequestType,
-        AssignedUser: request.AssignedUser,
-        CreatorUser: request.CreatorUser,
-        Incident: request.Incident,
-        UserEntryDate: request.UserEntryDate,
-        ConfirmedDateTime: request.ConfirmedDateTime,
-        AssigneeNotAvailable: request.AssigneeNotAvailable,
-        Confirmed: request.Confirmed,
-        AffectedService: request.AffectedService,
-        SystemClosedDateTime: request.SystemClosedDateTime,
-        IsDisabled: request.IsDisabled,
-      };
+      if (request == null) return null;
+      return mapRequestKeys(request);
     } catch (error) {
       console.log(error);
     }
   }
 
-  async findAll(pagination = 10): Promise<ResponseRequestDto[]> {
+  async findAll(pagination): Promise<RequestResponseDto[]> {
     try {
       const request = await this.requestModel.findAll({
         limit: pagination,
         include: { all: true },
       });
-      return request.map((r) => ({
-        Id: r.Id,
-        TicketNumber: r.TicketNumber,
-        GuestName: r.GuestName,
-        GuestRoom: r.GuestRoom,
-        GuestCompany: r.GuestCompany,
-        Comments: r.Comments,
-        RequestTypeId: r.RequestStateId,
-        HotelId: r.HotelId,
-        AssignedUserId: r.AssignedUserId,
-        CreatorUserId: r.createdAt,
-        RequestStateId: r.RequestStateId,
-        RoomId: r.RoomId,
-        UserId: r.UserId,
-        SystemEntryDate: r.SystemEntryDate,
-        RequestType: r.RequestType,
-        AssignedUser: r.AssignedUser,
-        CreatorUser: r.CreatorUser,
-        Incident: r.Incident,
-        UserEntryDate: r.UserEntryDate,
-        ConfirmedDateTime: r.ConfirmedDateTime,
-        AssigneeNotAvailable: r.AssigneeNotAvailable,
-        Confirmed: r.Confirmed,
-        AffectedService: r.AffectedService,
-        SystemClosedDateTime: r.SystemClosedDateTime,
-        IsDisabled: r.IsDisabled,
-      }));
+
+      const requestMapped = [];
+
+      request.forEach((element) => {
+        requestMapped.push(mapRequestKeys(element));
+      });
+
+      return requestMapped;
     } catch (error) {
       console.log(error);
     }
   }
 
   async find(
-    search,
-    whereRequestType,
+    searchParams,
+    params,
+    IsActive,
     order,
     whereInclude,
     limit,
     offset,
   ): Promise<RequestModel[]> {
+    //!THIS WILL BE THE NEW SEARCH
+    const searchTCCHANGEEEEEE = {
+      GuestName: {
+        [Op.like]: `%${searchParams.GuestName}%`,
+      },
+      UserEntryDate: {
+        [Op.or]: [
+          {
+            from: {
+              [Op.between]: [searchParams[0], searchParams[1]],
+            },
+          },
+          {
+            to: {
+              [Op.between]: [searchParams[0], searchParams[1]],
+            },
+          },
+        ],
+      },
+    };
+    const whereRequestType = { [Op.or]: [IsActive[0], IsActive[1]] };
+    console.log(whereRequestType);
     const requestFinded = this.requestModel.findAndCountAll({
-      where: search,
+      where: params,
       order: order,
       limit: limit,
       offset: offset,
       include: [
+        { model: UserModel, where: whereInclude, as: 'AssignedUser' },
         { all: true, nested: true },
-        { model: RequestType, where: whereRequestType },
+        { model: RequestType, where: { IsActive: whereRequestType } },
       ],
     });
     return (await requestFinded).rows;
+  }
+
+  async exist(id: number) {
+    try {
+      const exist = this.requestModel.findAndCountAll({
+        where: { HotelId: id },
+      });
+      return exist;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async update(requestId, params) {
+    try {
+      const updated = await this.requestModel.update(params, {
+        where: { Id: requestId },
+      });
+      return updated[0];
+    } catch (err) {
+      throw err;
+    }
   }
 }

@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
-import { RequestService } from './services/request.service';
 import { RequestController } from './controllers/request.controller';
-import { RequestRepository } from './repositories/request.repository';
 import { DatabaseModule } from 'src/request/database/database.module';
-import { requestProvider } from './database/provider/request.model.provider';
+import { requestModelProvider } from './database/provider/request.model.provider';
+import { requestServiceProvider } from './services/provider/service.provider';
+import { requestRepositoryProvider } from './repositories/provider/repository.provider';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [RequestController],
-  providers: [RequestService, RequestRepository, ...requestProvider],
+  providers: [
+    ...requestServiceProvider,
+    ...requestModelProvider,
+    ...requestRepositoryProvider,
+  ],
 })
 export class RequestModule {}

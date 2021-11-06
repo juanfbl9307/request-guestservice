@@ -8,9 +8,9 @@ import {
 } from 'sequelize-typescript';
 import { IncidentAttributes } from '../interfaces/incident.interface';
 import { RequestAttribute } from '../interfaces/request.interface';
-import { Incident } from './incident.model';
+import { IncidentModel } from './incident.model';
 import { RequestType } from './request-type.model';
-import { User } from './user.model';
+import { UserModel } from './user.model';
 
 @Table({
   tableName: 'REQUEST',
@@ -23,12 +23,14 @@ export class RequestModel extends Model<RequestAttribute> {
     type: DataType.INTEGER,
     primaryKey: true,
     field: 'idRequest',
+    autoIncrement: true,
   })
   Id: number;
 
   @Column({
     type: DataType.STRING,
     field: 'ticketNumber',
+    defaultValue: '-',
   })
   TicketNumber: string;
 
@@ -47,12 +49,14 @@ export class RequestModel extends Model<RequestAttribute> {
   @Column({
     type: DataType.STRING,
     field: 'guestCompany',
+    defaultValue: '',
   })
   GuestCompany: string;
 
   @Column({
     type: DataType.STRING,
     field: 'comments',
+    defaultValue: '',
   })
   Comments: string;
 
@@ -70,16 +74,22 @@ export class RequestModel extends Model<RequestAttribute> {
   })
   HotelId: number;
 
-  @BelongsTo(() => User, { foreignKey: 'idAssignedUser', as: 'AssignedUser' })
-  AssignedUser: User;
+  @BelongsTo(() => UserModel, {
+    foreignKey: 'idAssignedUser',
+    as: 'AssignedUser',
+  })
+  AssignedUser: UserModel;
   @Column({
     type: DataType.INTEGER,
     field: 'idAssignedUser',
   })
   AssignedUserId: number;
 
-  @BelongsTo(() => User, { foreignKey: 'idCreatorUser', as: 'CreatorUser' })
-  CreatorUser: User;
+  @BelongsTo(() => UserModel, {
+    foreignKey: 'idCreatorUser',
+    as: 'CreatorUser',
+  })
+  CreatorUser: UserModel;
   @Column({
     type: DataType.INTEGER,
     field: 'idCreatorUser',
@@ -101,23 +111,24 @@ export class RequestModel extends Model<RequestAttribute> {
   @Column({
     type: DataType.STRING,
     field: 'UserId',
+    defaultValue: null,
   })
   UserId: string;
 
   @Column({
-    type: DataType.DATE,
+    type: DataType.STRING,
     field: 'systemEntryDate',
   })
   SystemEntryDate: Date;
 
   @Column({
-    type: DataType.DATE,
+    type: DataType.STRING,
     field: 'userEntryDate',
   })
   UserEntryDate: Date;
 
   @Column({
-    type: DataType.DATE,
+    type: DataType.STRING,
     field: 'confirmedDateTime',
   })
   ConfirmedDateTime: Date;
@@ -137,13 +148,15 @@ export class RequestModel extends Model<RequestAttribute> {
   @Column({
     type: DataType.BOOLEAN,
     field: 'affectedService',
+    defaultValue: 0,
   })
   AffectedService: boolean;
 
   //Chequear escritura de este campo
   @Column({
-    type: DataType.DATE,
+    type: DataType.STRING,
     field: 'SystemClosedDateTime', // este campo con mayus al principio
+    defaultValue: null,
   })
   SystemClosedDateTime: Date;
 
@@ -153,6 +166,13 @@ export class RequestModel extends Model<RequestAttribute> {
   })
   IsDisabled: boolean;
 
-  @HasOne(() => Incident, 'idRequest')
+  @Column({
+    type: DataType.INTEGER,
+    field: 'idRequestInternalType',
+    defaultValue: 1,
+  })
+  IdRequestInternalType: number;
+
+  @HasOne(() => IncidentModel, 'idRequest')
   Incident: IncidentAttributes;
 }

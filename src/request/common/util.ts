@@ -52,15 +52,15 @@ export const getDateNowFormat = (minutes) => {
  * @returns
  */
 export const getOrder = (order, _default) => {
-  console.log(order);
-  if (order == null || order == undefined) {
+  /*   console.log(order);
+   */ if (order == null || order == undefined) {
     return _default;
   }
   //~//"UserEntryDate-DESC"
 
   const orderToArray = order.split('~');
-  console.log(orderToArray);
-  const resultToArray = [];
+  /*   console.log(orderToArray);
+   */ const resultToArray = [];
   orderToArray.forEach((element) => {
     let elements = element.split('-');
     if (elements.length == 2) {
@@ -80,13 +80,13 @@ export const getOrder = (order, _default) => {
           elements = [fields[0], fields[1], elements[1]];
         }
       }
-      console.log(elements);
-      resultToArray.push(elements);
+      /*       console.log(elements);
+       */ resultToArray.push(elements);
     }
   });
 
-  console.log(resultToArray);
-
+  /*   console.log(resultToArray);
+   */
   return resultToArray;
 };
 /**
@@ -119,4 +119,12 @@ export const getDateFromISO8601 = (isostr, timezone, format) => {
     moment: momentObject,
     format: momentObject.format(format),
   };
+};
+
+export const dateTimeFormat = (timeZone) => {
+  return moment().tz(timeZone).format('YYYY-MM-DDTHH:mm:ss');
+};
+
+export const dateFormatYMD = (dateTime) => {
+  return moment(dateTime).format('YYMMDD');
 };

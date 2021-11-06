@@ -7,7 +7,7 @@ export const IncidentStub = (): IncidentAttributes => {
     GuestRecallCount: 1,
     AreaRecallCount: 1,
     ExpectedSolutionDateTime: new Date(),
-    RealSolutiondDateTime: new Date(),
+    RealSolutionDateTime: new Date(),
     IsPeriferic: true,
     PerifericUser: 'periferic test user',
     PerifericArea: 'periferic test area',

@@ -1,33 +1,40 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Area } from '../models/area.model';
-import { Hotel } from '../models/hotel.model';
-import { Incident } from '../models/incident.model';
+import { CommentLogModel } from '../models/commentlog.model';
+import { HotelModel } from '../models/hotel.model';
+import { IncidentModel } from '../models/incident.model';
 import { RequestState } from '../models/request-state.model';
 import { RequestType } from '../models/request-type.model';
 import { RequestModel } from '../models/request.model';
-import { User } from '../models/user.model';
+import { RequestTypeModel } from '../models/requestType.model';
+import { RoomModel } from '../models/room.model';
+import { UserModel } from '../models/user.model';
 
 export const databaseProviders = [
   {
     provide: 'SEQUELIZE',
     useFactory: async () => {
       const sequelize = new Sequelize({
-        dialect: 'mysql',
+        dialect: 'mssql',
         host: 'localhost',
-        port: 3306,
-        username: 'root',
+        port: 1433,
+        username: 'username',
         password: 'password',
-        database: 'request',
+        database: 'GuestService',
         logging: false,
       });
       sequelize.addModels([
-        User,
+        UserModel,
         RequestModel,
         RequestType,
         RequestState,
-        Incident,
-        Hotel,
+        IncidentModel,
+        HotelModel,
         Area,
+        HotelModel,
+        RoomModel,
+        RequestTypeModel,
+        CommentLogModel,
       ]);
       await sequelize.sync();
       return sequelize;

@@ -7,7 +7,7 @@ import { HotelAttributes } from '../interfaces/hotel.interface';
   createdAt: false,
   updatedAt: false,
 })
-export class Hotel extends Model<HotelAttributes> {
+export class HotelModel extends Model<HotelAttributes> {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,

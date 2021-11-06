@@ -14,7 +14,7 @@ import { Area } from './area.model';
   createdAt: false,
   updatedAt: false,
 })
-export class User extends Model<UserAttributes> {
+export class UserModel extends Model<UserAttributes> {
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,

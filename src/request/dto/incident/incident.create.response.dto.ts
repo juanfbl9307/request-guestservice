@@ -1,5 +1,5 @@
-export interface IncidentAttributes {
-  Id?: number;
+export class IncidentCreatedResponseDto {
+  Id: number;
   RequestId: number;
   GuestRecallCount: number;
   AreaRecallCount: number;
