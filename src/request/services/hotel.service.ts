@@ -5,8 +5,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 export class HotelService {
   constructor(private readonly hotelRepository: HotelRepository) {}
 
-  getTimezone(hotelId: number): Promise<string> {
-    const timezone = this.hotelRepository.getTimezone(hotelId);
+  async getTimezone(hotelId: number): Promise<string> {
+    const timezone = await this.hotelRepository.getTimezone(hotelId);
+    if (timezone === null) throw new NotFoundException('Timezone not found');
     return timezone;
   }
   async getName(hotelId: number): Promise<string> {

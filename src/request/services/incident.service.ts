@@ -13,7 +13,7 @@ export class IncidentService {
     return incidentCreation;
   }
 
-  async updateByRequestId(requestId, params): Promise<number> {
+  async updateByRequestId(requestId, params): Promise<void> {
     try {
       const incidentUpdate = await this.incidentRepository.updateByRequestId(
         requestId,
@@ -21,7 +21,6 @@ export class IncidentService {
       );
       if (incidentUpdate === Constants.UPDATE_NOT_SUCCESFULL)
         throw new NotFoundException('Request not found');
-      return incidentUpdate;
     } catch (error) {
       throw error;
     }

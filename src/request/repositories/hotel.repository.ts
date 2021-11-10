@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Constants } from '../constants/constants.request';
 import { HotelModel } from '../database/models/hotel.model';
 
 @Injectable()
@@ -11,7 +10,7 @@ export class HotelRepository {
   async getTimezone(id: number): Promise<string> {
     try {
       const hotel = await this.hotelModel.findByPk(id);
-      if (hotel === null) return Constants.DEFAULT_TIMEZONE;
+      if (hotel === null) return null;
       return hotel.TimeZone;
     } catch (error) {
       throw error;
